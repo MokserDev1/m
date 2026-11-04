@@ -1,0 +1,308 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1D3623260D0F68450098F321 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F68450098F321 /* AppDelegate.m */; };
+		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
+		AA01000129B97316FDCFA394 /* GameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB01000129B97316FDCFA394 /* GameViewController.m */; };
+		AA01000229B97316FDCFA394 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BB01000229B97316FDCFA394 /* MenuViewController.m */; };
+		AA01000329B97316FDCFA394 /* SkeuomorphicButton.m in Sources */ = {isa = PBXBuildFile; fileRef = BB01000329B97316FDCFA394 /* SkeuomorphicButton.m */; };
+		AA01000429B97316FDCFA394 /* SnakeGameEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = BB01000429B97316FDCFA394 /* SnakeGameEngine.m */; };
+		AA01000529B97316FDCFA394 /* SnakeGridView.m in Sources */ = {isa = PBXBuildFile; fileRef = BB01000529B97316FDCFA394 /* SnakeGridView.m */; };
+		AA01000629B97316FDCFA394 /* SoundManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BB01000629B97316FDCFA394 /* SoundManager.m */; };
+		AA02000129B97316FDCFA394 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB02000129B97316FDCFA394 /* Info.plist */; };
+		AA02000229B97316FDCFA394 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = BB02000229B97316FDCFA394 /* Icon.png */; };
+		AA02000329B97316FDCFA394 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = BB02000329B97316FDCFA394 /* Icon@2x.png */; };
+		AA02000429B97316FDCFA394 /* click.wav in Resources */ = {isa = PBXBuildFile; fileRef = BB02000429B97316FDCFA394 /* click.wav */; };
+		AA02000529B97316FDCFA394 /* eat.wav in Resources */ = {isa = PBXBuildFile; fileRef = BB02000529B97316FDCFA394 /* eat.wav */; };
+		AA02000629B97316FDCFA394 /* gameover.wav in Resources */ = {isa = PBXBuildFile; fileRef = BB02000629B97316FDCFA394 /* gameover.wav */; };
+		1DF5F4400D08C38300821E07 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F43F0D08C38300821E07 /* UIKit.framework */; };
+		1D30DA220D05C18F00672E9C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30DA210D05C18F00672E9C /* Foundation.framework */; };
+		288765FC0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FB0DF74451002DB57D /* CoreGraphics.framework */; };
+		AA03000129B97316FDCFA394 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB03000129B97316FDCFA394 /* QuartzCore.framework */; };
+		AA03000229B97316FDCFA394 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BB03000229B97316FDCFA394 /* AudioToolbox.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1D60589F0D05DD56006BFB54 /* Zmeyka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Zmeyka.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D3623240D0F68450098F321 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		1D3623250D0F68450098F321 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		BB01000129B97316FDCFA394 /* GameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameViewController.m; sourceTree = "<group>"; };
+		BB01000229B97316FDCFA394 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
+		BB01000329B97316FDCFA394 /* SkeuomorphicButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SkeuomorphicButton.m; sourceTree = "<group>"; };
+		BB01000429B97316FDCFA394 /* SnakeGameEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SnakeGameEngine.m; sourceTree = "<group>"; };
+		BB01000529B97316FDCFA394 /* SnakeGridView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SnakeGridView.m; sourceTree = "<group>"; };
+		BB01000629B97316FDCFA394 /* SoundManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundManager.m; sourceTree = "<group>"; };
+		BB02000129B97316FDCFA394 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB02000229B97316FDCFA394 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		BB02000329B97316FDCFA394 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
+		BB02000429B97316FDCFA394 /* click.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = click.wav; sourceTree = "<group>"; };
+		BB02000529B97316FDCFA394 /* eat.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = eat.wav; sourceTree = "<group>"; };
+		BB02000629B97316FDCFA394 /* gameover.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = gameover.wav; sourceTree = "<group>"; };
+		1DF5F43F0D08C38300821E07 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		1D30DA210D05C18F00672E9C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		288765FB0DF74451002DB57D /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		BB03000129B97316FDCFA394 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		BB03000229B97316FDCFA394 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1D60588F0D05DD3D006BFB54 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D30DA220D05C18F00672E9C /* Foundation.framework in Frameworks */,
+				1DF5F4400D08C38300821E07 /* UIKit.framework in Frameworks */,
+				288765FC0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
+				AA03000129B97316FDCFA394 /* QuartzCore.framework in Frameworks */,
+				AA03000229B97316FDCFA394 /* AudioToolbox.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		29B97314FDCFA39411CA2CEA /* Zmeyka */ = {
+			isa = PBXGroup;
+			children = (
+				29B97315FDCFA39411CA2CEA /* Source */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CEA /* Products */,
+			);
+			name = Zmeyka;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				29B97316FDCFA39411CA2CEA /* main.m */,
+				1D3623240D0F68450098F321 /* AppDelegate.h */,
+				1D3623250D0F68450098F321 /* AppDelegate.m */,
+				BB01000129B97316FDCFA394 /* GameViewController.m */,
+				BB01000229B97316FDCFA394 /* MenuViewController.m */,
+				BB01000329B97316FDCFA394 /* SkeuomorphicButton.m */,
+				BB01000429B97316FDCFA394 /* SnakeGameEngine.m */,
+				BB01000529B97316FDCFA394 /* SnakeGridView.m */,
+				BB01000629B97316FDCFA394 /* SoundManager.m */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				BB02000129B97316FDCFA394 /* Info.plist */,
+				BB02000229B97316FDCFA394 /* Icon.png */,
+				BB02000329B97316FDCFA394 /* Icon@2x.png */,
+				BB02000429B97316FDCFA394 /* click.wav */,
+				BB02000529B97316FDCFA394 /* eat.wav */,
+				BB02000629B97316FDCFA394 /* gameover.wav */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1DF5F43F0D08C38300821E07 /* UIKit.framework */,
+				1D30DA210D05C18F00672E9C /* Foundation.framework */,
+				288765FB0DF74451002DB57D /* CoreGraphics.framework */,
+				BB03000129B97316FDCFA394 /* QuartzCore.framework */,
+				BB03000229B97316FDCFA394 /* AudioToolbox.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CEA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1D60589F0D05DD56006BFB54 /* Zmeyka.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1D6058900D05DD3D006BFB54 /* Zmeyka */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "Zmeyka" */;
+			buildPhases = (
+				1D60588D0D05DD3D006BFB54 /* Resources */,
+				1D60588E0D05DD3D006BFB54 /* Sources */,
+				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Zmeyka;
+			productName = Zmeyka;
+			productReference = 1D60589F0D05DD56006BFB54 /* Zmeyka.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+			};
+			buildConfigurationList = C01FCF4E08A9545400542C1A /* Build configuration list for PBXProject "Zmeyka" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = ru;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				ru,
+				en,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* Zmeyka */;
+			productRefGroup = 19C28FACFE9D520D11CA2CEA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1D6058900D05DD3D006BFB54 /* Zmeyka */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1D60588D0D05DD3D006BFB54 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA02000129B97316FDCFA394 /* Info.plist in Resources */,
+				AA02000229B97316FDCFA394 /* Icon.png in Resources */,
+				AA02000329B97316FDCFA394 /* Icon@2x.png in Resources */,
+				AA02000429B97316FDCFA394 /* click.wav in Resources */,
+				AA02000529B97316FDCFA394 /* eat.wav in Resources */,
+				AA02000629B97316FDCFA394 /* gameover.wav in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1D60588E0D05DD3D006BFB54 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
+				1D3623260D0F68450098F321 /* AppDelegate.m in Sources */,
+				AA01000129B97316FDCFA394 /* GameViewController.m in Sources */,
+				AA01000229B97316FDCFA394 /* MenuViewController.m in Sources */,
+				AA01000329B97316FDCFA394 /* SkeuomorphicButton.m in Sources */,
+				AA01000429B97316FDCFA394 /* SnakeGameEngine.m in Sources */,
+				AA01000529B97316FDCFA394 /* SnakeGridView.m in Sources */,
+				AA01000629B97316FDCFA394 /* SoundManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1D6058940D05DD3E006BFB54 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				PRODUCT_NAME = Zmeyka;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		1D6058950D05DD3E006BFB54 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				INFOPLIST_FILE = Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				PRODUCT_NAME = Zmeyka;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		C01FCF4F08A9545400542C1A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = armv7;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		C01FCF5008A9545400542C1A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = armv7;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "Zmeyka" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1D6058940D05DD3E006BFB54 /* Debug */,
+				1D6058950D05DD3E006BFB54 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A9545400542C1A /* Build configuration list for PBXProject "Zmeyka" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A9545400542C1A /* Debug */,
+				C01FCF5008A9545400542C1A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}

@@ -1,0 +1,202 @@
+name: Build Zmeyka iOS 6 ARMv7 IPA
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Native ARMv7 IPA
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Host Build Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential autoconf automake libtool git \
+            clang llvm libssl-dev zlib1g-dev uuid-dev \
+            fakeroot zip unzip curl
+
+      - name: Build apple-libtapi
+        run: |
+          git clone --depth 1 https://github.com/tpoechtrager/apple-libtapi.git
+          cd apple-libtapi
+          export INSTALLPREFIX=/opt/cctools
+          sudo mkdir -p /opt/cctools
+          sudo chown -R $USER:$USER /opt/cctools
+          ./build.sh
+          ./install.sh
+          cd ..
+
+      - name: Build cctools-port for arm-apple-darwin11 (ARMv7)
+        run: |
+          git clone --depth 1 https://github.com/tpoechtrager/cctools-port.git
+          cd cctools-port/cctools
+          ./configure \
+            --prefix=/opt/cctools \
+            --target=arm-apple-darwin11 \
+            --with-libtapi=/opt/cctools
+          make -j$(nproc)
+          make install
+          cd ../..
+          echo "/opt/cctools/bin" >> $GITHUB_PATH
+
+      - name: Install ldid (Code Signing Tool)
+        run: |
+          git clone --depth 1 https://github.com/tpoechtrager/ldid.git
+          cd ldid
+          make INSTALLPREFIX=/opt/cctools install
+          cd ..
+
+      - name: Download iPhoneOS 6.1 SDK
+        run: |
+          mkdir -p sdks
+          git clone --depth 1 https://github.com/qianjigui/iOS-sdks.git sdks-repo
+          mv sdks-repo/iPhoneOS6.1.sdk sdks/
+          rm -rf sdks-repo
+          echo "SDK successfully verified:"
+          ls -la sdks/iPhoneOS6.1.sdk
+
+      - name: Compile and Link Zmeyka Mach-O Executable (ARMv7)
+        run: |
+          export PATH=/opt/cctools/bin:$PATH
+          SDK_ROOT=$PWD/sdks/iPhoneOS6.1.sdk
+          
+          # Target flags strictly for iPhone 4S (ARMv7, iOS 6.0+)
+          clang -target arm-apple-darwin11 \
+            -arch armv7 \
+            -isysroot $SDK_ROOT \
+            -miphoneos-version-min=6.0 \
+            -fobjc-arc \
+            -O2 \
+            -I./Zmeyka/Source \
+            -c Zmeyka/Source/main.m -o main.o
+          
+          clang -target arm-apple-darwin11 \
+            -arch armv7 \
+            -isysroot $SDK_ROOT \
+            -miphoneos-version-min=6.0 \
+            -fobjc-arc \
+            -O2 \
+            -I./Zmeyka/Source \
+            -c Zmeyka/Source/AppDelegate.m -o AppDelegate.o
+            
+          clang -target arm-apple-darwin11 \
+            -arch armv7 \
+            -isysroot $SDK_ROOT \
+            -miphoneos-version-min=6.0 \
+            -fobjc-arc \
+            -O2 \
+            -I./Zmeyka/Source \
+            -c Zmeyka/Source/MenuViewController.m -o MenuViewController.o
+            
+          clang -target arm-apple-darwin11 \
+            -arch armv7 \
+            -isysroot $SDK_ROOT \
+            -miphoneos-version-min=6.0 \
+            -fobjc-arc \
+            -O2 \
+            -I./Zmeyka/Source \
+            -c Zmeyka/Source/GameViewController.m -o GameViewController.o
+            
+          clang -target arm-apple-darwin11 \
+            -arch armv7 \
+            -isysroot $SDK_ROOT \
+            -miphoneos-version-min=6.0 \
+            -fobjc-arc \
+            -O2 \
+            -I./Zmeyka/Source \
+            -c Zmeyka/Source/SnakeGameEngine.m -o SnakeGameEngine.o
+            
+          clang -target arm-apple-darwin11 \
+            -arch armv7 \
+            -isysroot $SDK_ROOT \
+            -miphoneos-version-min=6.0 \
+            -fobjc-arc \
+            -O2 \
+            -I./Zmeyka/Source \
+            -c Zmeyka/Source/SnakeGridView.m -o SnakeGridView.o
+            
+          clang -target arm-apple-darwin11 \
+            -arch armv7 \
+            -isysroot $SDK_ROOT \
+            -miphoneos-version-min=6.0 \
+            -fobjc-arc \
+            -O2 \
+            -I./Zmeyka/Source \
+            -c Zmeyka/Source/SkeuomorphicButton.m -o SkeuomorphicButton.o
+            
+          clang -target arm-apple-darwin11 \
+            -arch armv7 \
+            -isysroot $SDK_ROOT \
+            -miphoneos-version-min=6.0 \
+            -fobjc-arc \
+            -O2 \
+            -I./Zmeyka/Source \
+            -c Zmeyka/Source/SoundManager.m -o SoundManager.o
+
+          # Link Mach-O binary
+          arm-apple-darwin11-ld \
+            -arch armv7 \
+            -syslibroot $SDK_ROOT \
+            -ios_version_min 6.0 \
+            main.o AppDelegate.o MenuViewController.o GameViewController.o \
+            SnakeGameEngine.o SnakeGridView.o SkeuomorphicButton.o SoundManager.o \
+            -framework Foundation \
+            -framework UIKit \
+            -framework CoreGraphics \
+            -framework QuartzCore \
+            -framework AudioToolbox \
+            -lSystem \
+            -lobjc \
+            -o Zmeyka_bin
+
+          # Verify Mach-O header and architecture
+          arm-apple-darwin11-otool -vh Zmeyka_bin
+          file Zmeyka_bin
+
+      - name: Sign Binary and Bundle .app
+        run: |
+          export PATH=/opt/cctools/bin:$PATH
+          
+          # Sign binary with entitlements using ldid
+          ldid -SZmeyka/entitlements.plist Zmeyka_bin
+          
+          # Assemble .app bundle structure
+          APP_DIR="Payload/Zmeyka.app"
+          mkdir -p "$APP_DIR"
+          
+          # Move executable
+          cp Zmeyka_bin "$APP_DIR/Zmeyka"
+          chmod +x "$APP_DIR/Zmeyka"
+          
+          # Copy Info.plist and Resources
+          cp Zmeyka/Info.plist "$APP_DIR/"
+          cp -r Zmeyka/Resources/* "$APP_DIR/"
+          cp -r Zmeyka/Icons/* "$APP_DIR/"
+          
+          # Copy into local build artifacts folder
+          mkdir -p Zmeyka/Build
+          cp -r "$APP_DIR" Zmeyka/Build/
+          
+          # Package into IPA
+          zip -r9 Zmeyka.ipa Payload
+          cp Zmeyka.ipa Zmeyka/Build/
+          
+          echo "Package complete. IPA size:"
+          ls -lh Zmeyka/Build/Zmeyka.ipa
+
+      - name: Upload Compiled IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zmeyka-iOS6-ARMv7-IPA
+          path: |
+            Zmeyka/Build/Zmeyka.ipa
+            Zmeyka/Build/Zmeyka.app
