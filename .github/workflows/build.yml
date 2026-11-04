@@ -22,7 +22,7 @@ jobs:
           sudo apt-get install -y \
             build-essential autoconf automake libtool git \
             clang llvm libssl-dev zlib1g-dev uuid-dev \
-            fakeroot zip unzip curl
+            fakeroot zip unzip curl libdispatch-dev libblocksruntime-dev
 
       - name: Build apple-libtapi
         run: |
