@@ -38,3 +38,4 @@ typedef NS_ENUM(NSInteger, GameState) {
 - (void)changeDirection:(Direction)newDirection;
 
 @end
+

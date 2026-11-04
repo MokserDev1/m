@@ -14,3 +14,4 @@ Zmeyka_RESOURCE_DIRS = Resources Icons
 Zmeyka_CODESIGN_FLAGS = -Sentitlements.plist
 
 include $(THEOS_MAKE_PATH)/application.mk
+

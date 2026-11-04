@@ -22,7 +22,7 @@ jobs:
           sudo apt-get install -y \
             build-essential autoconf automake libtool git \
             clang llvm libssl-dev zlib1g-dev uuid-dev \
-            fakeroot zip unzip curl libdispatch-dev libblocksruntime-dev
+            fakeroot zip unzip curl
 
       - name: Build apple-libtapi
         run: |
@@ -39,10 +39,18 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/tpoechtrager/cctools-port.git
           cd cctools-port/cctools
+          
+          # Fix modern Linux libdispatch issues in ld64 libcodedirectory
+          sed -i 's/DISPATCH_QUEUE_SERIAL/NULL/g' ld64/src/ld/libcodedirectory.c || true
+          sed -i 's/DISPATCH_APPLY_AUTO/0/g' ld64/src/ld/libcodedirectory.c || true
+          sed -i 's/#define LIBCD_PARALLEL 1/#define LIBCD_PARALLEL 0/g' ld64/src/ld/libcodedirectory.c || true
+          
           ./configure \
             --prefix=/opt/cctools \
             --target=arm-apple-darwin11 \
-            --with-libtapi=/opt/cctools
+            --with-libtapi=/opt/cctools \
+            CFLAGS="-O2 -Wno-error" \
+            CXXFLAGS="-O2 -Wno-error"
           make -j$(nproc)
           make install
           cd ../..
@@ -142,61 +150,58 @@ jobs:
             -I./Zmeyka/Source \
             -c Zmeyka/Source/SoundManager.m -o SoundManager.o
 
-          # Link Mach-O binary
-          arm-apple-darwin11-ld \
+          # Link all object files into native ARMv7 Mach-O executable
+          clang -target arm-apple-darwin11 \
             -arch armv7 \
-            -syslibroot $SDK_ROOT \
-            -ios_version_min 6.0 \
-            main.o AppDelegate.o MenuViewController.o GameViewController.o \
-            SnakeGameEngine.o SnakeGridView.o SkeuomorphicButton.o SoundManager.o \
-            -framework Foundation \
+            -isysroot $SDK_ROOT \
+            -miphoneos-version-min=6.0 \
+            -fobjc-arc \
             -framework UIKit \
+            -framework Foundation \
             -framework CoreGraphics \
             -framework QuartzCore \
             -framework AudioToolbox \
-            -lSystem \
-            -lobjc \
+            main.o AppDelegate.o MenuViewController.o GameViewController.o \
+            SnakeGameEngine.o SnakeGridView.o SkeuomorphicButton.o SoundManager.o \
             -o Zmeyka_bin
 
-          # Verify Mach-O header and architecture
-          arm-apple-darwin11-otool -vh Zmeyka_bin
+          echo "Checking Mach-O binary type:"
           file Zmeyka_bin
 
       - name: Sign Binary and Bundle .app
         run: |
           export PATH=/opt/cctools/bin:$PATH
           
-          # Sign binary with entitlements using ldid
-          ldid -SZmeyka/entitlements.plist Zmeyka_bin
+          # Create .app directory
+          mkdir -p build/Payload/Zmeyka.app
           
-          # Assemble .app bundle structure
-          APP_DIR="Payload/Zmeyka.app"
-          mkdir -p "$APP_DIR"
+          # Copy compiled Mach-O binary
+          cp Zmeyka_bin build/Payload/Zmeyka.app/Zmeyka
+          chmod +x build/Payload/Zmeyka.app/Zmeyka
           
-          # Move executable
-          cp Zmeyka_bin "$APP_DIR/Zmeyka"
-          chmod +x "$APP_DIR/Zmeyka"
+          # Copy Info.plist and resources
+          cp Zmeyka/Info.plist build/Payload/Zmeyka.app/Info.plist
+          cp -r Zmeyka/Resources/* build/Payload/Zmeyka.app/
+          cp -r Zmeyka/Icons/* build/Payload/Zmeyka.app/
           
-          # Copy Info.plist and Resources
-          cp Zmeyka/Info.plist "$APP_DIR/"
-          cp -r Zmeyka/Resources/* "$APP_DIR/"
-          cp -r Zmeyka/Icons/* "$APP_DIR/"
+          # Copy iTunesArtwork
+          cp Zmeyka/Icons/iTunesArtwork build/Payload/iTunesArtwork || true
           
-          # Copy into local build artifacts folder
-          mkdir -p Zmeyka/Build
-          cp -r "$APP_DIR" Zmeyka/Build/
+          # Ad-hoc sign executable and app bundle using ldid with entitlements
+          ldid -SZmeyka/entitlements.plist build/Payload/Zmeyka.app/Zmeyka
+          ldid -SZmeyka/entitlements.plist build/Payload/Zmeyka.app
           
-          # Package into IPA
-          zip -r9 Zmeyka.ipa Payload
-          cp Zmeyka.ipa Zmeyka/Build/
+          # Create .ipa archive
+          cd build
+          zip -r9 ../Zmeyka.ipa Payload
+          cd ..
           
-          echo "Package complete. IPA size:"
-          ls -lh Zmeyka/Build/Zmeyka.ipa
+          echo "Finished packaging Zmeyka.ipa:"
+          ls -la Zmeyka.ipa
+          unzip -l Zmeyka.ipa
 
       - name: Upload Compiled IPA Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Zmeyka-iOS6-ARMv7-IPA
-          path: |
-            Zmeyka/Build/Zmeyka.ipa
-            Zmeyka/Build/Zmeyka.app
+          name: Zmeyka-iOS6-ARMv7
+          path: Zmeyka.ipa

@@ -242,3 +242,4 @@
 - (Direction)currentDirection { return _currentDirection; }
 
 @end
+

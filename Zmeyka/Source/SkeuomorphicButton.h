@@ -19,3 +19,4 @@ typedef NS_ENUM(NSInteger, SkeuomorphicButtonStyle) {
 + (SkeuomorphicButton *)buttonWithTitle:(NSString *)title style:(SkeuomorphicButtonStyle)style;
 
 @end
+

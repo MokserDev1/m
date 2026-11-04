@@ -14,3 +14,4 @@
 @property (nonatomic, assign) BOOL isDead;
 
 @end
+
