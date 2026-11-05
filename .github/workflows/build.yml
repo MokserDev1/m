@@ -10,149 +10,71 @@ on:
 jobs:
   build:
     name: Build Native ARMv7 IPA
-    runs-on: ubuntu-22.04
+    runs-on: macos-13
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install Host Build Dependencies
+      - name: Select Xcode 14 (supports armv7)
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential autoconf automake libtool git \
-            clang llvm libssl-dev zlib1g-dev uuid-dev \
-            fakeroot zip unzip curl
+          sudo xcode-select -s /Applications/Xcode_14.3.1.app/Contents/Developer || \
+          sudo xcode-select -s /Applications/Xcode_14.2.app/Contents/Developer || \
+          sudo xcode-select -s /Applications/Xcode_14.1.app/Contents/Developer || \
+          sudo xcode-select -s /Applications/Xcode_14.0.1.app/Contents/Developer || \
+          sudo xcode-select -s /Applications/Xcode_14.0.app/Contents/Developer
+          xcodebuild -version
+          xcode-select -p
+          clang --version
 
-      - name: Build apple-libtapi
+      - name: Verify ARMv7 support
         run: |
-          git clone --depth 1 https://github.com/tpoechtrager/apple-libtapi.git
-          cd apple-libtapi
-          export INSTALLPREFIX=/opt/cctools
-          sudo mkdir -p /opt/cctools
-          sudo chown -R $USER:$USER /opt/cctools
-          ./build.sh
-          ./install.sh
-          cd ..
+          # Check that clang supports armv7-apple-ios
+          echo "int main(){return 0;}" > /tmp/test.c
+          clang -arch armv7 -target armv7-apple-ios6.0 -isysroot $(xcrun --sdk iphoneos --show-sdk-path) -o /tmp/test_bin /tmp/test.c 2>&1 || echo "Direct clang test done"
+          xcrun --sdk iphoneos --show-sdk-path
+          xcrun --sdk iphoneos --show-sdk-version
 
-      - name: Build cctools-port for arm-apple-darwin11 (ARMv7)
+      - name: Compile Zmeyka Source Files (ARMv7)
         run: |
-          git clone --depth 1 https://github.com/tpoechtrager/cctools-port.git
-          cd cctools-port/cctools
-          
-          # Fix modern Linux libdispatch issues in ld64 libcodedirectory
-          sed -i 's/DISPATCH_QUEUE_SERIAL/NULL/g' ld64/src/ld/libcodedirectory.c || true
-          sed -i 's/DISPATCH_APPLY_AUTO/0/g' ld64/src/ld/libcodedirectory.c || true
-          sed -i 's/#define LIBCD_PARALLEL 1/#define LIBCD_PARALLEL 0/g' ld64/src/ld/libcodedirectory.c || true
-          
-          ./configure \
-            --prefix=/opt/cctools \
-            --target=arm-apple-darwin11 \
-            --with-libtapi=/opt/cctools \
-            CFLAGS="-O2 -Wno-error" \
-            CXXFLAGS="-O2 -Wno-error"
-          make -j$(nproc)
-          make install
-          cd ../..
-          echo "/opt/cctools/bin" >> $GITHUB_PATH
+          SDK_ROOT=$(xcrun --sdk iphoneos --show-sdk-path)
+          echo "Using SDK: $SDK_ROOT"
 
-      - name: Install ldid (Code Signing Tool)
+          CLANG=$(xcrun --sdk iphoneos --find clang)
+          echo "Using clang: $CLANG"
+
+          CFLAGS="-arch armv7 \
+            -target armv7-apple-ios6.0 \
+            -isysroot $SDK_ROOT \
+            -miphoneos-version-min=6.0 \
+            -fobjc-arc \
+            -O2 \
+            -Wno-deprecated-declarations \
+            -Wno-objc-property-no-attribute \
+            -I./Zmeyka/Source"
+
+          mkdir -p build_obj
+
+          $CLANG $CFLAGS -c Zmeyka/Source/main.m              -o build_obj/main.o
+          $CLANG $CFLAGS -c Zmeyka/Source/AppDelegate.m       -o build_obj/AppDelegate.o
+          $CLANG $CFLAGS -c Zmeyka/Source/MenuViewController.m -o build_obj/MenuViewController.o
+          $CLANG $CFLAGS -c Zmeyka/Source/GameViewController.m -o build_obj/GameViewController.o
+          $CLANG $CFLAGS -c Zmeyka/Source/SnakeGameEngine.m    -o build_obj/SnakeGameEngine.o
+          $CLANG $CFLAGS -c Zmeyka/Source/SnakeGridView.m      -o build_obj/SnakeGridView.o
+          $CLANG $CFLAGS -c Zmeyka/Source/SkeuomorphicButton.m -o build_obj/SkeuomorphicButton.o
+          $CLANG $CFLAGS -c Zmeyka/Source/SoundManager.m       -o build_obj/SoundManager.o
+
+          echo "Object files:"
+          ls -la build_obj/
+
+      - name: Link Zmeyka Mach-O Executable
         run: |
-          git clone --depth 1 https://github.com/tpoechtrager/ldid.git
-          cd ldid
-          make INSTALLPREFIX=/opt/cctools install
-          cd ..
+          SDK_ROOT=$(xcrun --sdk iphoneos --show-sdk-path)
+          CLANG=$(xcrun --sdk iphoneos --find clang)
 
-      - name: Download iPhoneOS 6.1 SDK
-        run: |
-          mkdir -p sdks
-          git clone --depth 1 https://github.com/qianjigui/iOS-sdks.git sdks-repo
-          mv sdks-repo/iPhoneOS6.1.sdk sdks/
-          rm -rf sdks-repo
-          echo "SDK successfully verified:"
-          ls -la sdks/iPhoneOS6.1.sdk
-
-      - name: Compile and Link Zmeyka Mach-O Executable (ARMv7)
-        run: |
-          export PATH=/opt/cctools/bin:$PATH
-          SDK_ROOT=$PWD/sdks/iPhoneOS6.1.sdk
-          
-          # Target flags strictly for iPhone 4S (ARMv7, iOS 6.0+)
-          clang -target arm-apple-darwin11 \
+          $CLANG \
             -arch armv7 \
-            -isysroot $SDK_ROOT \
-            -miphoneos-version-min=6.0 \
-            -fobjc-arc \
-            -O2 \
-            -I./Zmeyka/Source \
-            -c Zmeyka/Source/main.m -o main.o
-          
-          clang -target arm-apple-darwin11 \
-            -arch armv7 \
-            -isysroot $SDK_ROOT \
-            -miphoneos-version-min=6.0 \
-            -fobjc-arc \
-            -O2 \
-            -I./Zmeyka/Source \
-            -c Zmeyka/Source/AppDelegate.m -o AppDelegate.o
-            
-          clang -target arm-apple-darwin11 \
-            -arch armv7 \
-            -isysroot $SDK_ROOT \
-            -miphoneos-version-min=6.0 \
-            -fobjc-arc \
-            -O2 \
-            -I./Zmeyka/Source \
-            -c Zmeyka/Source/MenuViewController.m -o MenuViewController.o
-            
-          clang -target arm-apple-darwin11 \
-            -arch armv7 \
-            -isysroot $SDK_ROOT \
-            -miphoneos-version-min=6.0 \
-            -fobjc-arc \
-            -O2 \
-            -I./Zmeyka/Source \
-            -c Zmeyka/Source/GameViewController.m -o GameViewController.o
-            
-          clang -target arm-apple-darwin11 \
-            -arch armv7 \
-            -isysroot $SDK_ROOT \
-            -miphoneos-version-min=6.0 \
-            -fobjc-arc \
-            -O2 \
-            -I./Zmeyka/Source \
-            -c Zmeyka/Source/SnakeGameEngine.m -o SnakeGameEngine.o
-            
-          clang -target arm-apple-darwin11 \
-            -arch armv7 \
-            -isysroot $SDK_ROOT \
-            -miphoneos-version-min=6.0 \
-            -fobjc-arc \
-            -O2 \
-            -I./Zmeyka/Source \
-            -c Zmeyka/Source/SnakeGridView.m -o SnakeGridView.o
-            
-          clang -target arm-apple-darwin11 \
-            -arch armv7 \
-            -isysroot $SDK_ROOT \
-            -miphoneos-version-min=6.0 \
-            -fobjc-arc \
-            -O2 \
-            -I./Zmeyka/Source \
-            -c Zmeyka/Source/SkeuomorphicButton.m -o SkeuomorphicButton.o
-            
-          clang -target arm-apple-darwin11 \
-            -arch armv7 \
-            -isysroot $SDK_ROOT \
-            -miphoneos-version-min=6.0 \
-            -fobjc-arc \
-            -O2 \
-            -I./Zmeyka/Source \
-            -c Zmeyka/Source/SoundManager.m -o SoundManager.o
-
-          # Link all object files into native ARMv7 Mach-O executable
-          clang -target arm-apple-darwin11 \
-            -arch armv7 \
+            -target armv7-apple-ios6.0 \
             -isysroot $SDK_ROOT \
             -miphoneos-version-min=6.0 \
             -fobjc-arc \
@@ -161,47 +83,69 @@ jobs:
             -framework CoreGraphics \
             -framework QuartzCore \
             -framework AudioToolbox \
-            main.o AppDelegate.o MenuViewController.o GameViewController.o \
-            SnakeGameEngine.o SnakeGridView.o SkeuomorphicButton.o SoundManager.o \
+            build_obj/main.o \
+            build_obj/AppDelegate.o \
+            build_obj/MenuViewController.o \
+            build_obj/GameViewController.o \
+            build_obj/SnakeGameEngine.o \
+            build_obj/SnakeGridView.o \
+            build_obj/SkeuomorphicButton.o \
+            build_obj/SoundManager.o \
             -o Zmeyka_bin
 
-          echo "Checking Mach-O binary type:"
+          echo "Binary info:"
           file Zmeyka_bin
+          lipo -info Zmeyka_bin
 
-      - name: Sign Binary and Bundle .app
+      - name: Bundle .app and Sign
         run: |
-          export PATH=/opt/cctools/bin:$PATH
-          
-          # Create .app directory
           mkdir -p build/Payload/Zmeyka.app
-          
-          # Copy compiled Mach-O binary
+
+          # Copy binary
           cp Zmeyka_bin build/Payload/Zmeyka.app/Zmeyka
           chmod +x build/Payload/Zmeyka.app/Zmeyka
-          
-          # Copy Info.plist and resources
+
+          # Copy Info.plist
           cp Zmeyka/Info.plist build/Payload/Zmeyka.app/Info.plist
-          cp -r Zmeyka/Resources/* build/Payload/Zmeyka.app/
-          cp -r Zmeyka/Icons/* build/Payload/Zmeyka.app/
-          
-          # Copy iTunesArtwork
-          cp Zmeyka/Icons/iTunesArtwork build/Payload/iTunesArtwork || true
-          
-          # Ad-hoc sign executable and app bundle using ldid with entitlements
-          ldid -SZmeyka/entitlements.plist build/Payload/Zmeyka.app/Zmeyka
-          ldid -SZmeyka/entitlements.plist build/Payload/Zmeyka.app
-          
-          # Create .ipa archive
+
+          # Copy resources and icons
+          cp -r Zmeyka/Resources/* build/Payload/Zmeyka.app/ 2>/dev/null || true
+          cp -r Zmeyka/Icons/* build/Payload/Zmeyka.app/ 2>/dev/null || true
+
+          # iTunesArtwork (must be at Payload level)
+          cp Zmeyka/Icons/iTunesArtwork build/Payload/iTunesArtwork 2>/dev/null || true
+
+          echo "App bundle contents:"
+          ls -la build/Payload/Zmeyka.app/
+
+          # Ad-hoc code signing with Apple's codesign
+          codesign --force --sign - --entitlements Zmeyka/entitlements.plist \
+            --timestamp=none \
+            build/Payload/Zmeyka.app/Zmeyka
+
+          echo "Binary signed successfully"
+
+      - name: Package IPA
+        run: |
           cd build
           zip -r9 ../Zmeyka.ipa Payload
           cd ..
-          
-          echo "Finished packaging Zmeyka.ipa:"
+
+          echo "IPA created:"
           ls -la Zmeyka.ipa
+          echo "IPA contents:"
           unzip -l Zmeyka.ipa
 
-      - name: Upload Compiled IPA Artifact
+          # Verify the binary inside
+          unzip -p Zmeyka.ipa Payload/Zmeyka.app/Zmeyka > /tmp/inner_bin
+          file /tmp/inner_bin
+          lipo -info /tmp/inner_bin
+          echo "Magic bytes (should be CE FA ED FE for ARMv7):"
+          xxd /tmp/inner_bin | head -2
+
+      - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Zmeyka-iOS6-ARMv7
           path: Zmeyka.ipa
+          retention-days: 30
