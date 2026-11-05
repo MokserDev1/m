@@ -118,7 +118,7 @@
     _soundButton = [SkeuomorphicButton buttonWithTitle:@"Звук: ВКЛ" style:SkeuomorphicButtonStyleSilver];
     _soundButton.frame = CGRectMake(35.0f, 408.0f, viewWidth - 70.0f, 42.0f);
     [_soundButton addTarget:self action:@selector(soundButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:soundButton];
+    [self.view addSubview:_soundButton];
 }
 
 - (void)updateHighScoreDisplay {
